@@ -12,5 +12,5 @@ The primary objective was to develop a model that could explain at least 95% of 
 
 First, clone the repository and navigate into the project directory:
 ```bash
-git clone 
+git clone https://github.com/AaryamanP/AI-based-Yield-Prediction-and-Optimization.git
 cd yield-prediction-project

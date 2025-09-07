@@ -3,7 +3,7 @@ from src.llm_model import LLMModel
 from typing import Dict
 from src.utils import safe_parse_json
 
-CHUNK_MAX_CHARS = 600   # roughly 300 tokens
+CHUNK_MAX_CHARS = 400   # roughly 300 tokens
 
 PROMPT_TEMPLATE = """
 You are an expert agricultural advisor.
@@ -37,7 +37,7 @@ class RAGCropRecommender:
     def __init__(self, embeddings_path="data/embeddings/embeddings.pkl",
                  model_name="google/flan-t5-base", device="cpu"):
         self.vdb = VectorDB(embeddings_path=embeddings_path)
-        self.llm = LLMModel(model_name=model_name, device=device)
+        self.llm = LLMModel(model_name=model_name)
 
     def _make_excerpt(self, doc_text: str, max_chars: int = CHUNK_MAX_CHARS) -> str:
         snippet = doc_text.strip().replace("\n", " ")

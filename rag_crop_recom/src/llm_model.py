@@ -1,15 +1,27 @@
 import torch
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM , BitsAndBytesConfig
 
 class LLMModel:
-    def __init__(self, model_name="google/flan-t5-base", device="cpu"):
-        print(f"🔹 Loading LLM: {model_name}")
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-        self.model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+    def __init__(self, model_name="google/flan-t5-base"):
+        print(f"🔹 Loading LLM: {model_name} with 4-bit quantization")
 
-        # Always run on CPU to avoid MPS OOM
-        self.device = torch.device(device)
-        self.model.to(self.device)
+        # Configure 4-bit quantization
+        quant_config = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_compute_dtype="float16",   # computation precision
+            bnb_4bit_use_double_quant=True,     # double quantization (saves more memory)
+            bnb_4bit_quant_type="nf4"           # NormalFloat4, best for LLMs
+        )
+
+        # Load tokenizer
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+        # Load model in 4-bit mode
+        self.model = AutoModelForSeq2SeqLM.from_pretrained(
+            model_name,
+            quantization_config=quant_config,
+        )
+
 
     def generate(self, prompt: str, max_new_tokens=150):
         inputs = self.tokenizer(
